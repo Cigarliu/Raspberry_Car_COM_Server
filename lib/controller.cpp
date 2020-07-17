@@ -12,14 +12,18 @@ void Controller::Init(int udp_listen_port, int tcp_listen_port)
   udp_server_ = new my_udp::UdpServer();
   tcp_server_ = new my_tcp::TcpServer();
   udp_server_->UdpServerInit(udp_listen_port);
-  tcp_server_->TcpServerInit(tcp_listen_port);
+  if(tcp_server_->TcpServerInit(tcp_listen_port) == -1)
+  {
+      exit(1);
+  }
 }
 
 void* Controller::TcpHandler(void *_this)
 {
-std::cout << "Thread TcpHandler ok \n" << std::endl;
+  std::cout << "Thread TcpHandler ok \n" << std::endl;
   Controller* controller =  static_cast<Controller*>(_this);
   controller->get_tcp_server()->ListenMessage(controller->get_tcp_server()->get_socket_id(),controller->udp_buffer_);
+  return controller;
 }
 
 void* Controller::UdpHandler(void *_this)
@@ -46,6 +50,7 @@ void* Controller::TcpUdpStatusController(void* _this)
   Controller* controller = static_cast<Controller*>(_this);
   int counter_1 = 0;
   int counter_2 = 0;
+  bool is_connected = false;
   while(true)
   {
     if(controller->get_udp_server()->get_is_recv_message() == true)
@@ -65,7 +70,12 @@ void* Controller::TcpUdpStatusController(void* _this)
     }
     else
     {
-      std::cout << " 已建立和设备的TCP连接 " << std::endl;
+
+      if(!is_connected)
+      {
+          std::cout << " 已建立和设备的TCP连接 " << std::endl;
+      }
+      is_connected = true;
     }
 
     usleep(100);
@@ -93,7 +103,7 @@ void Controller::Start()
   {
     std::cout << "Create pthread UdpHandler fail " << std::endl;
   }
-
+  std::cerr << "start ... " << std::endl;
   pthread_join(thread_udp_handler, NULL); // joints all the threads.
   pthread_join(thread_tcp_handler, NULL);
   pthread_join(thread_tcp_udp_status_controller, NULL);

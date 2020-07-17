@@ -35,16 +35,35 @@ int TcpServer::ListenMessage(const int socket_id, char* data)
 {
   int recv_socket_id;
   long n;
-  listen(socket_id,10);
+  if(listen(socket_id,10) != 0)
+  {
+      std::cerr << "listen fail" << std::endl;
+      return 1; // num 1 is fail status
+  }
+
+  std::cerr << "listen ... " << std::endl;
   while(true)
   {
-    if( (recv_socket_id = accept(socket_id, (struct sockaddr*)NULL, NULL)) == -1)
+    if(!client_is_connect_)
     {
-      printf("accept socket error: %s(errno: %d)",strerror(errno),errno);
-      continue;
+        if( (recv_socket_id = accept(socket_id, (struct sockaddr*)NULL, NULL)) == -1)
+        {
+           printf("accept socket error: %s(errno: %d)",strerror(errno),errno);
+           continue;
+        }
+        else
+        {
+            std::cerr << "device online " << std::endl;
+        }
     }
+
     client_is_connect_  = true;  // 存在连接
     n = recv(recv_socket_id, data, 4096, 0);
+    if(n <= 0)
+    {
+        client_is_connect_ = false;
+        std::cerr << " \033[31m device offline ! \033[0m" << std::endl;
+    }
     data[n] = '\0';
     printf("recv msg from client: %s\n", data);
     if(is_recv_command_from_udp_server_)
@@ -53,8 +72,6 @@ int TcpServer::ListenMessage(const int socket_id, char* data)
       memset(send_buffer_,0,sizeof (send_buffer_));
       is_recv_command_from_udp_server_ = false;
     }
-    close(recv_socket_id);
-    client_is_connect_ = false; // 断开连接
   }
   close(socket_id);
 }

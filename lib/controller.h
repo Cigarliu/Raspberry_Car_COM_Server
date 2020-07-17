@@ -3,8 +3,8 @@
 
 #include <pthread.h>
 
-#include "udpserver.h"
-#include "tcpserver.h"
+#include "lib/udpserver.h"
+#include "lib/tcpserver.h"
 
 namespace my_controller
 {
