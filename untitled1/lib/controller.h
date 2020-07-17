@@ -21,7 +21,7 @@ public:
   static void* TcpHandler(void* _this);
   static void* UdpHandler(void* _this);
   static void* TcpUdpStatusController(void* _this);
-  static void* TcpComandSend(void* _this);
+
   my_tcp::TcpServer* get_tcp_server(){return tcp_server_;}
   my_udp::UdpServer* get_udp_server(){return udp_server_;}
   char* get_udp_buffer(){return udp_buffer_;}

@@ -32,13 +32,11 @@ void* Controller::UdpHandler(void *_this)
   Controller* controller =  static_cast<Controller*>(_this);
   char* udp_buffer;
   udp_buffer = controller->get_udp_buffer();
-
   int socket_id;
   socket_id =  controller->get_udp_server()->get_socket_id();
   while (true)
   {
     controller->get_udp_server()->ListenMessage(socket_id,udp_buffer);
-    memcpy(controller->udp_buffer_,udp_buffer,128);  // 得到缓存数据
   }
 
 }
@@ -84,27 +82,13 @@ void* Controller::TcpUdpStatusController(void* _this)
   }
 }
 
-void *Controller::TcpCommandSend(void *_this)
-{
-    std::cout << "Thread TcpUdpStatusController ok \n" << std::endl;
-    Controller* controller = static_cast<Controller*>(_this);
-    while(true)
-    {
-        if(controller->get_udp_server()->get_is_recv_message())
-        {
-            controller->get_tcp_server()->Command2Device(controller->get_udp_buffer());
-        }
-    }
-
-}
-
 
 void Controller::Start()
 {
   pthread_t thread_udp_handler;
   pthread_t thread_tcp_handler;
   pthread_t thread_tcp_udp_status_controller;
-  pthread_t thread_TcpCommandSend;
+
   if(pthread_create(&thread_udp_handler, NULL, UdpHandler, (void*)this))
   {
     std::cout << "Create pthread UdpHandler fail " << std::endl;
@@ -118,11 +102,6 @@ void Controller::Start()
   if(pthread_create(&thread_tcp_udp_status_controller, NULL, TcpUdpStatusController, (void*)this))
   {
     std::cout << "Create pthread UdpHandler fail " << std::endl;
-  }
-
-  if(pthread_create(&thread_TcpCommandSend, NULL, TcpCommandSend, (void*)this))
-  {
-      std::cout << "Create pthread TcpCommandSend fail " << std::endl;
   }
   std::cerr << "start ... " << std::endl;
   pthread_join(thread_udp_handler, NULL); // joints all the threads.

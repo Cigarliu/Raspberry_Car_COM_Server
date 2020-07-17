@@ -53,7 +53,6 @@ int TcpServer::ListenMessage(const int socket_id, char* data)
         }
         else
         {
-            device_socket_id_ == recv_socket_id;
             std::cerr << "device online " << std::endl;
         }
     }
@@ -75,18 +74,6 @@ int TcpServer::ListenMessage(const int socket_id, char* data)
     }
   }
   close(socket_id);
-}
-
-int TcpServer::Command2Device(char* mess)
-{
-    if(client_is_connect_)
-    {
-        if(is_recv_command_from_udp_server_)
-        {
-            SendMessage(device_socket_id_, send_buffer_);
-            is_recv_command_from_udp_server_ = false;
-        }
-    }
 }
 
 void  TcpServer::SendMessage(const int socket_id, char *data)

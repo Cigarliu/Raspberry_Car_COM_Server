@@ -21,7 +21,6 @@ public:
   ~TcpServer();
   int TcpServerInit(const int port); // 创建一个用于监听的套接字，并返回套接字
   int ListenMessage(const int socket_id, char* data);
-  int Command2Device(char* mess);
   void SendMessage(const int socket_id, char* data);  // 发送消息给客户端
   int get_socket_id(){return socket_id_;}
   void set_udp_status(const bool is_recv){is_recv_command_from_udp_server_ = is_recv;}
@@ -32,7 +31,6 @@ private:
   sockaddr_in source_addr_;  // 用于存储发送端的网络信息
   long com_counter_;
   int socket_id_;
-  int device_socket_id_;
   char source_ip_[INET_ADDRSTRLEN];
   bool is_recv_command_from_udp_server_;
   char send_buffer_[128];
