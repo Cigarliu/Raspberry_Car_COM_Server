@@ -25,6 +25,7 @@ public:
   void SendMessage(const int socket_id, char* data);  // 发送消息给客户端
   int get_socket_id(){return socket_id_;}
   void set_udp_status(const bool is_recv){is_recv_command_from_udp_server_ = is_recv;}
+  bool get_udp_status(){return is_recv_command_from_udp_server_;}
   void set_send_buffer(char* data){memcpy(data,send_buffer_,128);}
   bool get_tcp_connect_status(){return client_is_connect_;}
 private:

@@ -90,9 +90,10 @@ void *Controller::TcpCommandSend(void *_this)
     Controller* controller = static_cast<Controller*>(_this);
     while(true)
     {
-        if(controller->get_udp_server()->get_is_recv_message())
+        if(controller->get_tcp_server()->get_udp_status())
         {
             controller->get_tcp_server()->Command2Device(controller->get_udp_buffer());
+            controller->get_tcp_server()->set_udp_status(false);
         }
     }
 
