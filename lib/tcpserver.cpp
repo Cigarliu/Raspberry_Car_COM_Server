@@ -9,6 +9,7 @@ TcpServer::TcpServer()
 
 TcpServer::~TcpServer()
 {
+    close(socket_id_);
 }
 
 int TcpServer::TcpServerInit(const int port)
@@ -53,7 +54,7 @@ int TcpServer::ListenMessage(const int socket_id, char* data)
         }
         else
         {
-            device_socket_id_ == recv_socket_id;
+            device_socket_id_ = recv_socket_id;
             std::cerr << "device online " << std::endl;
         }
     }
@@ -65,14 +66,6 @@ int TcpServer::ListenMessage(const int socket_id, char* data)
         client_is_connect_ = false;
         std::cerr << " \033[31m device offline ! \033[0m" << std::endl;
     }
-    data[n] = '\0';
-    printf("recv msg from client: %s\n", data);
-    if(is_recv_command_from_udp_server_)
-    {
-      SendMessage(recv_socket_id, send_buffer_);
-      memset(send_buffer_,0,sizeof (send_buffer_));
-      is_recv_command_from_udp_server_ = false;
-    }
   }
   close(socket_id);
 }
@@ -83,7 +76,9 @@ int TcpServer::Command2Device(char* mess)
     {
         if(is_recv_command_from_udp_server_)
         {
-            SendMessage(device_socket_id_, send_buffer_);
+            std::cout << "send command !" << std::endl;
+            SendMessage(device_socket_id_, mess);
+            memset(mess,0,128);
             is_recv_command_from_udp_server_ = false;
         }
     }

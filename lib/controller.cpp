@@ -30,15 +30,14 @@ void* Controller::UdpHandler(void *_this)
 {
   std::cout << "Thread UdpHandler ok \n" << std::endl;
   Controller* controller =  static_cast<Controller*>(_this);
-  char* udp_buffer;
-  udp_buffer = controller->get_udp_buffer();
-
   int socket_id;
   socket_id =  controller->get_udp_server()->get_socket_id();
   while (true)
   {
-    controller->get_udp_server()->ListenMessage(socket_id,udp_buffer);
-    memcpy(controller->udp_buffer_,udp_buffer,128);  // 得到缓存数据
+    controller->get_udp_server()->ListenMessage(socket_id,controller->udp_buffer_);
+     std::cout << "udp mess: " << std::endl;
+     printf(controller->udp_buffer_,"\n");
+     std::cout << "-- " << std::endl;
   }
 
 }
@@ -92,9 +91,11 @@ void *Controller::TcpCommandSend(void *_this)
     {
         if(controller->get_tcp_server()->get_udp_status())
         {
+            std::cout << "check command " << std::endl;
             controller->get_tcp_server()->Command2Device(controller->get_udp_buffer());
             controller->get_tcp_server()->set_udp_status(false);
         }
+        usleep(50);
     }
 
 }
@@ -130,5 +131,5 @@ void Controller::Start()
   pthread_join(thread_udp_handler, NULL); // joints all the threads.
   pthread_join(thread_tcp_handler, NULL);
   pthread_join(thread_tcp_udp_status_controller, NULL);
-
+  pthread_join(thread_Tcp_CommandSend,NULL);
 }
