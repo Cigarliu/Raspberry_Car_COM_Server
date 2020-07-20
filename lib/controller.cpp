@@ -104,7 +104,8 @@ void Controller::Start()
   pthread_t thread_udp_handler;
   pthread_t thread_tcp_handler;
   pthread_t thread_tcp_udp_status_controller;
-  pthread_t thread_TcpCommandSend;
+  pthread_t thread_Tcp_CommandSend;
+
   if(pthread_create(&thread_udp_handler, NULL, UdpHandler, (void*)this))
   {
     std::cout << "Create pthread UdpHandler fail " << std::endl;
@@ -120,7 +121,7 @@ void Controller::Start()
     std::cout << "Create pthread UdpHandler fail " << std::endl;
   }
 
-  if(pthread_create(&thread_TcpCommandSend, NULL, TcpCommandSend, (void*)this))
+  if(pthread_create(&thread_Tcp_CommandSend, NULL, TcpCommandSend, (void*)this))
   {
       std::cout << "Create pthread TcpCommandSend fail " << std::endl;
   }
